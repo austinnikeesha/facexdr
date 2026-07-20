@@ -1,0 +1,32 @@
+# Flutter/Dart/Pub
+.dart_tool/
+.packages
+pubspec.lock
+build/
+*.dart_tool/
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/gradle.properties
+android/gradlew
+android/gradlew.bat
+android/gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large model files - we'll use Git LFS
+assets/*.onnx
+
+# Temporary files
+*.log
+*.tmp
