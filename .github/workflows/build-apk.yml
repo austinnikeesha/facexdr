@@ -33,8 +33,7 @@ jobs:
             # First, remove ALL import lines related to groovy.xml
             sed -i '/import groovy.xml/d' "$FLUTTER_GROOVY"
             # Then add the correct imports at the very top
-            sed -i '1i import groovy.xml.XmlParser' "$FLUTTER_GROOVY"
-            sed -i '1i import groovy.xml.QName' "$FLUTTER_GROOVY"
+            sed -i '1i import groovy.xml.XmlParser\nimport groovy.xml.QName' "$FLUTTER_GROOVY"
             echo "Patched flutter.groovy - imports fixed"
             head -20 "$FLUTTER_GROOVY"
           fi
