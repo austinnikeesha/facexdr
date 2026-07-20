@@ -5,8 +5,7 @@ plugins {
 
 android {
     namespace = "com.faceswap.app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -25,10 +24,10 @@ android {
 
     defaultConfig {
         applicationId = "com.faceswap.app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode.toInt()
-        versionName = flutter.versionName
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0"
         multiDexEnabled = true
     }
 
@@ -42,7 +41,11 @@ android {
 
     packaging {
         resources {
-            pickFirsts += listOf("**/libonnxruntime.so", "**/libopencv_java4.so", "**/libc++_shared.so")
+            pickFirsts += listOf(
+                "**/libonnxruntime.so",
+                "**/libopencv_java4.so",
+                "**/libc++_shared.so"
+            )
         }
     }
 }
@@ -55,6 +58,5 @@ dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("androidx.core:core:1.13.1")
     implementation("androidx.core:core-ktx:1.13.1")
-    // Flutter engine embedding library - required for FlutterActivity, FlutterEngine, MethodChannel, etc.
     implementation("io.flutter:flutter_embedding_release:1.0.0-83675ed27633283e7fc296c8bca22e841224c096")
 }
