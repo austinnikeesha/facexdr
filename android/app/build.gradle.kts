@@ -52,13 +52,8 @@ android {
     }
 }
 
-flutter {
-    source = "../.."
-}
-
 dependencies {
     implementation("androidx.multidex:multidex:2.0.1")
     implementation("androidx.core:core:1.13.1")
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("io.flutter:flutter_embedding_release:1.0.0-83675ed27633283e7fc296c8bca22e841224c096")
 }
