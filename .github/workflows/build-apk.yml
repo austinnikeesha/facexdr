@@ -22,13 +22,13 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.19.6'
           channel: 'stable'
           cache: true
 
       - name: Fix Flutter groovy.xml.QName bug
         run: |
-          FLUTTER_GROOVY="/opt/hostedtoolcache/flutter/stable-3.22.3-x64/flutter/packages/flutter_tools/gradle/src/main/groovy/flutter.groovy"
+          FLUTTER_GROOVY="/opt/hostedtoolcache/flutter/stable-3.19.6-x64/flutter/packages/flutter_tools/gradle/src/main/groovy/flutter.groovy"
           if [ -f "$FLUTTER_GROOVY" ]; then
             # Remove broken import
             sed -i '/import groovy.xml.QName/d' "$FLUTTER_GROOVY"
