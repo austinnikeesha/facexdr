@@ -24,7 +24,7 @@ jobs:
         with:
           flutter-version: '3.29.2'
           channel: 'stable'
-          cache: true
+          cache: false
 
       - name: Fix Flutter groovy.xml.QName bug
         run: |
