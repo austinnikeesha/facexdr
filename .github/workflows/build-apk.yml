@@ -30,13 +30,18 @@ jobs:
         run: |
           FLUTTER_GROOVY="$FLUTTER_ROOT/packages/flutter_tools/gradle/src/main/groovy/flutter.groovy"
           if [ -f "$FLUTTER_GROOVY" ]; then
+            echo "=== Before patch ==="
+            head -30 "$FLUTTER_GROOVY"
             # First, remove ALL import lines related to groovy.xml
             sed -i '/import groovy.xml/d' "$FLUTTER_GROOVY"
-            # Then add the correct imports at the very top
-            sed -i '1i import groovy.xml.XmlParser' "$FLUTTER_GROOVY"
-            sed -i '1i import groovy.xml.QName' "$FLUTTER_GROOVY"
+            # Then add the correct imports at the very top (after any package declaration)
+            sed -i '1i import groovy.xml.XmlParser\nimport groovy.xml.QName' "$FLUTTER_GROOVY"
+            echo "=== After patch ==="
+            head -30 "$FLUTTER_GROOVY"
             echo "Patched flutter.groovy - imports fixed"
-            head -20 "$FLUTTER_GROOVY"
+          else
+            echo "ERROR: flutter.groovy not found at $FLUTTER_GROOVY"
+            find /opt/hostedtoolcache -name "flutter.groovy" 2>/dev/null
           fi
 
       - name: Install dependencies
