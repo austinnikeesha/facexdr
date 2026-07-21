@@ -10,14 +10,66 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-ffmpeg:
+    name: Build ffmpeg-kit from source
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      ffmpeg_dir: ${{ steps.set_output.outputs.ffmpeg_dir }}
+    steps:
+      - name: Checkout ffmpeg-kit
+        uses: actions/checkout@v4
+        with:
+          repository: arthenica/ffmpeg-kit
+          ref: main
+          path: ffmpeg-kit
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27c
+
+      - name: Build ffmpeg-kit (full-gpl)
+        run: |
+          cd ffmpeg-kit
+          ./build_android.sh --package=full-gpl --ndk-version=r27c --architectures=arm64-v8a,armeabi-v7a,x86,x86_64
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+
+      - name: Set output
+        id: set_output
+        run: |
+          echo "ffmpeg_dir=$(pwd)/ffmpeg-kit/output" >> $GITHUB_OUTPUT
+
+      - name: Upload ffmpeg artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-artifacts
+          path: ffmpeg-kit/output/
+          retention-days: 7
+
+  build-app:
     name: Build Android Release APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
+    needs: build-ffmpeg
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download ffmpeg artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ffmpeg-artifacts
+          path: ffmpeg-artifacts
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -26,16 +78,30 @@ jobs:
           channel: 'stable'
           cache: false
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 35
+          ndk-version: r27c
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10.2'
+
       - name: Fix Flutter groovy.xml.QName bug
         run: |
-          # Find and fix flutter.groovy
           FLUTTER_GROOVY="/opt/hostedtoolcache/flutter/stable-3.29.2-x64/flutter/packages/flutter_tools/gradle/src/main/groovy/flutter.groovy"
           if [ -f "$FLUTTER_GROOVY" ]; then
             echo "=== Before patch ==="
             head -30 "$FLUTTER_GROOVY"
-            # Remove ALL groovy.xml imports
             sed -i '/import groovy.xml/d' "$FLUTTER_GROOVY"
-            # Disable usages of XmlParser and QName
             sed -i 's/new XmlParser()/null \/\/ disabled/g' "$FLUTTER_GROOVY"
             sed -i 's/entry.key instanceof QName/false \/\/ disabled/g' "$FLUTTER_GROOVY"
             sed -i 's/if (entry.key instanceof QName)/if (false) \/\/ disabled/g' "$FLUTTER_GROOVY"
@@ -52,6 +118,11 @@ jobs:
 
       - name: Verify Flutter setup
         run: flutter doctor -v
+
+      - name: Copy ffmpeg artifacts to local maven repo
+        run: |
+          mkdir -p ~/.m2/repository/com/arthenica
+          cp -r ffmpeg-artifacts/* ~/.m2/repository/com/arthenica/
 
       - name: Build Release APK
         run: flutter build apk --release --split-per-abi
