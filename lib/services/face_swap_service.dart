@@ -319,7 +319,7 @@ class FaceSwapService {
     // Gaussian blur the mask for feathering - use tuple (int, int)
     cv.gaussianBlur(mask, (31, 31), 11.0, dst: mask);
 
-    // Poisson seamless cloning - returns the blended result
+    // Poisson seamless cloning
     final cloneCenter = cv.Point(
       x1 + faceW ~/ 2,
       y1 + faceH ~/ 2,
@@ -458,7 +458,7 @@ class FaceSwapService {
             .clamp(0, 255).toInt();
         final b = ((tensor[2 * height * width + idx] * 0.5 + 0.5) * 255)
             .clamp(0, 255).toInt();
-        // OpenCV BGR
+        // OpenCV BGR - use set method
         mat.set<cv.Vec3b>(y, x, cv.Vec3b(b, g, r));
       }
     }

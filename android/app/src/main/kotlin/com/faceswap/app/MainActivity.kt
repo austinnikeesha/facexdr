@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.nio.ByteBuffer
 
@@ -22,7 +23,7 @@ class MainActivity : FlutterActivity() {
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL
-        ).setMethodCallHandler { call, result ->
+        ).setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
             when (call.method) {
 
                 "startOverlayService" -> {
